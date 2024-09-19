@@ -1,0 +1,13 @@
+* Fileserver
+an opinionated file server downloader
+** Planned Features [0/7]
+In order of importance
+
+- [ ]  On the fly CSS customization
+- [ ]  Ignore dotfiles
+- [ ]  Compress folders for download
+- [ ]  Make an optional download cache
+- [ ]  Admin console
+- [ ]  Authed downloads
+- [ ]  Authed uploads
+
