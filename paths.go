@@ -11,6 +11,7 @@ type FileForVisit struct {
     Name string    
     RealPath string
     WebPath string
+    IsDir bool
 }
 
 func GetFiles(realPath string) []FileForVisit {
@@ -23,9 +24,10 @@ func GetFiles(realPath string) []FileForVisit {
         if file.IsDir() {
             rp := fp.Join(realPath, file.Name())
             a := FileForVisit {
-                Name: fp.Join(realPath, file.Name()),
+                Name: file.Name(),
                 RealPath: rp,
                 WebPath: strings.ReplaceAll(rp, DirToServe, ""),
+                IsDir: true,
             }
             available = append(available, a)
         }
@@ -34,9 +36,10 @@ func GetFiles(realPath string) []FileForVisit {
         if !file.IsDir() {
             rp := fp.Join(realPath, file.Name())
             a := FileForVisit {
-                Name: fp.Join(realPath, file.Name()),
+                Name: file.Name(),
                 RealPath: rp,
                 WebPath: strings.ReplaceAll(rp, DirToServe, ""),
+                IsDir: false,
             }
             available = append(available, a)
         }
