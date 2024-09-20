@@ -87,7 +87,6 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/octet-stream")
     // Limit download rate
     currentDownloads += 1
-    as := fmt.Sprintf("%0.3f MB/s", float64(speedLimit)/float64(currentDownloads)/1000000)
     begin := time.Now()
     var canceled bool
     // Open the file and find the file size
@@ -109,7 +108,7 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
         Str("requester-ip", GetIP(r)).
         Str("file", servePath).
         Int64("current-downloads", currentDownloads).
-        Str("available-bandwidth", as).
+        Str("available-bandwidth", fmt.Sprintf("%s/s", PrettyBytes(speedLimit/currentDownloads))).
         Msg("New Download")
     // Download
     for range time.Tick(1 * time.Second) {
@@ -122,13 +121,12 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
             break
         }
     }
-    duration := fmt.Sprintf("%0.2fs", time.Since(begin).Seconds())
     currentDownloads -= 1
     l := log.Info().
-           Str("requester-ip", GetIP(r)).
-           Int64("current-downloads", currentDownloads).
-           Int64("downloaded-size", *nw.Progress).
-           Str("elapsed", duration)
+             Str("requester-ip", GetIP(r)).
+             Str("downloaded-size", PrettyBytes(*nw.Progress)).
+             Int64("current-downloads", currentDownloads).
+             Str("time-elapsed", PrettyTime(time.Since(begin).Seconds()))
     if !canceled {
         l.Msg("Download Complete")
     } else {
