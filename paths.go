@@ -1,10 +1,11 @@
 package main
 
 import (
-    "os"
-    "strings"
-    fp "path/filepath"
-    "github.com/rs/zerolog/log"
+	"os"
+	fp "path/filepath"
+	"strings"
+
+	"github.com/rs/zerolog/log"
 )
 
 type FileForVisit struct {
