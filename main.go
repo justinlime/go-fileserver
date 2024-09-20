@@ -21,8 +21,8 @@ var (
 
     //go:embed templates
     tmplFS embed.FS
-    //go:embed htmx.min.js
-    htmx embed.FS
+    //go:embed jsdeps
+    jsdepsFS embed.FS
 )
 
 func init() {

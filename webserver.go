@@ -24,8 +24,6 @@ func (dw DownloadWriter) Write(b []byte) (int, error) {
     return n, err
 }
 
-
-
 func StartServer() {
     log.Info().Str("port", port[1:]).Msg("Webserver started")
     http.Handle("/", middle(rootHandle))
@@ -62,8 +60,9 @@ func rootHandle(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+// Serve the HTMX dep
 func htmxHandle(w http.ResponseWriter, r *http.Request) {
-    h, err := htmx.Open("htmx.min.js")
+    h, err := jsdepsFS.Open("jsdeps/htmx.min.js")
     if err != nil {
         log.Fatal().Err(err).Msg("Failed to open htmx")
     }
