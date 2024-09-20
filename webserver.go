@@ -5,7 +5,6 @@ import (
     "io"
     "fmt"
     "time"
-    "strings"
     fp "path/filepath"
     "net/http"
     tmpl "html/template"
@@ -13,16 +12,6 @@ import (
 )
 
 var currentDownloads int64 = 0
-
-type DownloadWriter struct {
-    http.ResponseWriter
-    Progress *int64
-}
-func (dw DownloadWriter) Write(b []byte) (int, error) {
-    n, err := dw.ResponseWriter.Write(b) 
-    *dw.Progress += int64(n)
-    return n, err
-}
 
 func StartServer() {
     log.Info().Str("port", port[1:]).Msg("Webserver started")
@@ -36,8 +25,8 @@ func middle(next func(http.ResponseWriter, *http.Request)) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         log.Debug().
             Str("type", r.Method).
-            Str("requester-ip", GetIP(r)).
-            Str("requested-url", fp.Join(r.Host, r.URL.Path)).
+            Str("requester_ip", GetIP(r)).
+            Str("requested_url", fp.Join(r.Host, r.URL.Path)).
             Msg("New Request")
         handle.ServeHTTP(w, r)
     })
@@ -71,23 +60,9 @@ func htmxHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func downloadHandle(w http.ResponseWriter, r *http.Request) {
-    var prog int64
-    // Wraped http.ResponseWriter to tracked progress
-    nw := DownloadWriter{
-        w,
-        &prog,
-    }
     servePath := fp.Join(DirToServe, r.URL.Path)
-    if _, err := os.Stat(servePath); err != nil {
-        log.Debug().Err(err).Msg("File not found, or can't be accessed")
-        http.NotFound(w, r)
-        return
-    }
-    w.Header().Set("Content-Type", "application/octet-stream")
     // Limit download rate
     currentDownloads += 1
-    begin := time.Now()
-    var canceled bool
     // Open the file and find the file size
     file, err := os.Open(servePath)
     if err != nil {
@@ -95,52 +70,39 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
         http.NotFound(w, r)
         return
     }
-    fileInfo , err := os.Stat(servePath)
-    if err != nil {
-        log.Error().Err(err).Msg("Failed to stat download file")
-        http.NotFound(w, r)
-        return
-    }
-    // Set the header to ensure it downloads
-    w.Header().Set("Content-Length", fmt.Sprintf("%d", fileInfo.Size()))
+    fileInfo, _ := os.Stat(servePath)
     log.Info().
-        Str("requester-ip", GetIP(r)).
+        Str("requester_ip", GetIP(r)).
         Str("file", servePath).
-        Int64("current-downloads", currentDownloads).
-        Str("available-bandwidth", fmt.Sprintf("%s/s", PrettyBytes(speedLimit/currentDownloads))).
+        Int64("current_downloads", currentDownloads).
+        Str("available_bandwidth", fmt.Sprintf("%s/s", PrettyBytes(speedLimit/currentDownloads))).
         Msg("New Download")
     // Download
+    w.Header().Set("Content-Type", "application/octet-stream")
+    w.Header().Set("Content-Length", fmt.Sprintf("%d", fileInfo.Size()))
+    begin := time.Now()
+    var canceled bool
     for range time.Tick(1 * time.Second) {
         // Check the speed again every tick
         availableSpeed := speedLimit / currentDownloads
-        if _, err = io.CopyN(nw, file, availableSpeed); err != nil {
-            if *nw.Progress != fileInfo.Size() {
-                canceled = true 
+        if n, err := io.CopyN(w, file, availableSpeed); err != nil {
+            // FIXME n only returns in chunks, not the acual written amount
+            if n != fileInfo.Size() {
+                canceled = false
+                // canceled = true
             }
             break
         }
     }
     currentDownloads -= 1
     l := log.Info().
-             Str("requester-ip", GetIP(r)).
-             Str("downloaded-size", PrettyBytes(*nw.Progress)).
-             Int64("current-downloads", currentDownloads).
-             Str("time-elapsed", PrettyTime(time.Since(begin).Seconds()))
-    if !canceled {
-        l.Msg("Download Complete")
-    } else {
+             Str("requester_ip", GetIP(r)).
+             Str("time_elapsed", PrettyTime(time.Since(begin).Seconds())).
+             Int64("current-downloads", currentDownloads)
+    if canceled {
         l.Msg("Download Interrupted")
-    }
-}
-
-// Get the remote requesters' IP
-func GetIP(r *http.Request) string {
-    IP := strings.Split(r.Header.Get("X-Forwarded-For"), ",")[0]
-    if IP == "" {
-        IP = r.Header.Get("X-Real-IP")
-    }
-    if IP == "" {
-        IP = strings.Split(r.RemoteAddr, ":")[0]
-    }
-    return IP
+        return
+    } 
+    l.Str("downloaded_size", PrettyBytes(fileInfo.Size())).
+      Msg("Download Complete")
 }

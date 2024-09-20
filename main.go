@@ -46,9 +46,9 @@ func init() {
     }
     speedLimit = int64(1000 * 1000 * ms)
     log.Info().
-        Str("max-speed", fmt.Sprintf("%s/s", PrettyBytes(speedLimit))).
+        Str("max_speed", fmt.Sprintf("%s/s", PrettyBytes(speedLimit))).
         Str("port", port).
-        Str("serving-directory", DirToServe).
+        Str("serving_directory", DirToServe).
         Msg("Using the following config")
 }
 
