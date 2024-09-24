@@ -5,11 +5,22 @@ import (
     "io"
     "fmt"
     "time"
-    fp "path/filepath"
     "net/http"
+    fp "path/filepath"
     tmpl "html/template"
     "github.com/rs/zerolog/log"
 )
+
+type DownloadReader struct {
+    io.Reader
+    n int64
+}
+
+func (w *DownloadReader) Read(p []byte) (int, error) {
+    n, err := w.Reader.Read(p) 
+    w.n += int64(n)
+    return n, err
+}
 
 var currentDownloads int64 = 0
 
@@ -81,16 +92,14 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/octet-stream")
     w.Header().Set("Content-Length", fmt.Sprintf("%d", fileInfo.Size()))
     begin := time.Now()
-    var canceled bool
+    reader := &DownloadReader{Reader: file}
     for range time.Tick(1 * time.Second) {
-        // Check the speed again every tick
         availableSpeed := speedLimit / currentDownloads
-        if n, err := io.CopyN(w, file, availableSpeed); err != nil {
-            // FIXME n only returns in chunks, not the acual written amount
-            if n != fileInfo.Size() {
-                canceled = false
-                // canceled = true
-            }
+        // Prevent trying to read/write more than needed
+        if availableSpeed > fileInfo.Size() {
+            availableSpeed = fileInfo.Size()
+        }
+        if _, err := io.CopyN(w, reader, availableSpeed); err != nil {
             break
         }
     }
@@ -98,11 +107,12 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
     l := log.Info().
              Str("requester_ip", GetIP(r)).
              Str("time_elapsed", PrettyTime(time.Since(begin).Seconds())).
+             Str("downloaded_size", PrettyBytes(reader.n)).
+             Str("download", servePath).
              Int64("current-downloads", currentDownloads)
-    if canceled {
+    if fileInfo.Size() != reader.n {
         l.Msg("Download Interrupted")
-        return
+    } else {
+        l.Msg("Download Complete")
     } 
-    l.Str("downloaded_size", PrettyBytes(fileInfo.Size())).
-      Msg("Download Complete")
 }
