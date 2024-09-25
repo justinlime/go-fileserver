@@ -24,44 +24,39 @@ func GetFiles(realPath string) []FileForVisit {
         return available
     }
     for _, file := range files {
+        var size int
+        rp := fp.Join(realPath, file.Name())
+        fileInfo, err := os.Stat(rp)
+        if err != nil {
+            log.Error().Err(err).Msg("Failed to stat file")
+            continue
+        }
+        a := FileForVisit {
+            Name: file.Name(),
+            RealPath: rp,
+            WebPath: strings.ReplaceAll(rp, DirToServe, ""),
+        }
         if file.IsDir() {
-            rp := fp.Join(realPath, file.Name())
-            f, err := os.Stat(rp)
+            subPaths, err := GetPathsRecursively(a.RealPath)
             if err != nil {
-                log.Error().
-                    Str("file", rp).
-                    Err(err).
-                    Msg("Failed to stat file")
+                log.Error().Err(err).Msg("Failed to calculate size of dir")
+                continue
             }
-            a := FileForVisit {
-                Name: file.Name(),
-                RealPath: rp,
-                WebPath: strings.ReplaceAll(rp, DirToServe, ""),
-                Size: PrettyBytes(f.Size()),
-                IsDir: true,
+            for _, f := range subPaths {
+                info, err := os.Stat(f) 
+                if err != nil {
+                    log.Error().Err(err).Msg("Failed to calculate size of dir")
+                    continue
+                }
+                size += int(info.Size())
             }
-            available = append(available, a)
+            a.Size = PrettyBytes(int64(size))
+            a.IsDir = true
+        } else {
+            a.Size = PrettyBytes(fileInfo.Size())
+            a.IsDir = false
         }
-    }
-    for _, file := range files {
-        if !file.IsDir() {
-            rp := fp.Join(realPath, file.Name())
-            f, err := os.Stat(rp)
-            if err != nil {
-                log.Error().
-                    Str("file", rp).
-                    Err(err).
-                    Msg("Failed to stat file")
-            }
-            a := FileForVisit {
-                Name: file.Name(),
-                RealPath: rp,
-                WebPath: strings.ReplaceAll(rp, DirToServe, ""),
-                Size: PrettyBytes(f.Size()),
-                IsDir: false,
-            }
-            available = append(available, a)
-        }
+        available = append(available, a)
     }
     return available
 }

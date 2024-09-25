@@ -69,7 +69,6 @@ func rootHandle(w http.ResponseWriter, r *http.Request) {
         embedFS,
         "embed/templates/base.html",
         "embed/templates/dir.html",
-        "embed/templates/sizes.html",
     ))
     w.Header().Set("Content-Type", "text/html")
     if err := t.Execute(w, GetFiles(DirToServe)); err != nil {
@@ -83,7 +82,11 @@ func embedHandle(w http.ResponseWriter, r *http.Request) {
     fs.ServeHTTP(w, r)
 }
 
-func pageHandle(w http.ResponseWriter, r *http.Request) {
+func openHandle(w http.ResponseWriter, r *http.Request) {
+    return
+}
+
+func directoryHandle(w http.ResponseWriter, r *http.Request) {
     return
 }
 

@@ -1,13 +1,16 @@
-<div>
-  <ul>
-  {{ range . }}
-    <li>
-    {{ if .IsDir }}
-      <a class="download-dir" href="{{ .WebPath }}">{{ .Name }}</a>
-    {{ else }}
-      <a class="download-file" href="{{ .WebPath }}">{{ .Name }}</a>
-    {{ end }}
-    </li>
+<ul>
+{{ range . }}
+  {{ if .IsDir }}
+  <li>
+    <a class="download-dir" href="{{ .WebPath }}">{{ .Name }}</a> <span>{{ .Size }}</span>
+  </li>
   {{ end }}
-  </ul>
-</div>
+{{ end }}
+{{ range . }}
+  {{ if not .IsDir }}
+  <li>
+    <a class="download-file" href="{{ .WebPath }}">{{ .Name }}</a> <span>{{ .Size }}</span>
+  </li>
+  {{ end }}
+{{ end }}
+</ul>

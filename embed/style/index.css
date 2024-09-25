@@ -105,9 +105,20 @@ body {
 ul {
     margin: 0;
     padding: 0;
+    display: block;
+    width: 100%;
 }
 li {
+    padding: 0.25rem 1rem;
     list-style: none;
+    display: flex;
+    justify-content: space-between;
+    transition: .2s;
+}
+
+li:hover {
+    background-color: #11111B;
+    border-radius: 1rem;
 }
 
 /* links */
@@ -117,7 +128,4 @@ a {
     /* text-decoration: underline; */
     transition: .4s;
     position: relative;
-}
-a:hover {
-    color: brown;
 }
