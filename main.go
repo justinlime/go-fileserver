@@ -44,7 +44,7 @@ func init() {
     } else {
         InitLogger(zerolog.InfoLevel)
     }
-    speedLimit = int64(1000 * 1000 * ms)
+    speedLimit = int64(1024 * 1024 * ms)
     log.Info().
         Str("max_speed", fmt.Sprintf("%s/s", PrettyBytes(speedLimit))).
         Str("port", port).

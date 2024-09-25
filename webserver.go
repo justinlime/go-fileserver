@@ -9,17 +9,30 @@ import (
     fp "path/filepath"
     tmpl "html/template"
     "github.com/rs/zerolog/log"
+
+
 )
 
 type DownloadReader struct {
     io.Reader
-    n int64
+    Progress int64
+    LimitBucket int
 }
 
 func (w *DownloadReader) Read(p []byte) (int, error) {
+    w.Limit(p)
     n, err := w.Reader.Read(p) 
-    w.n += int64(n)
+    w.Progress += int64(n)
     return n, err
+}
+
+func (w *DownloadReader) Limit(p []byte) {
+    availableSpeed := speedLimit / currentDownloads
+    if len(p) + w.LimitBucket >= int(availableSpeed) {
+        time.Sleep(time.Second * 1)
+        w.LimitBucket = 0
+    }
+    w.LimitBucket += len(p)
 }
 
 var currentDownloads int64 = 0
@@ -72,7 +85,6 @@ func htmxHandle(w http.ResponseWriter, r *http.Request) {
 
 func downloadHandle(w http.ResponseWriter, r *http.Request) {
     servePath := fp.Join(DirToServe, r.URL.Path)
-    // Limit download rate
     currentDownloads += 1
     // Open the file and find the file size
     file, err := os.Open(servePath)
@@ -81,6 +93,7 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
         http.NotFound(w, r)
         return
     }
+    defer file.Close()
     fileInfo, _ := os.Stat(servePath)
     log.Info().
         Str("requester_ip", GetIP(r)).
@@ -93,26 +106,17 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Length", fmt.Sprintf("%d", fileInfo.Size()))
     begin := time.Now()
     reader := &DownloadReader{Reader: file}
-    for range time.Tick(1 * time.Second) {
-        availableSpeed := speedLimit / currentDownloads
-        // Prevent trying to read/write more than needed
-        if availableSpeed > fileInfo.Size() {
-            availableSpeed = fileInfo.Size()
-        }
-        if _, err := io.CopyN(w, reader, availableSpeed); err != nil {
-            break
-        }
-    }
+    io.Copy(w, reader)
     currentDownloads -= 1
     l := log.Info().
              Str("requester_ip", GetIP(r)).
              Str("time_elapsed", PrettyTime(time.Since(begin).Seconds())).
-             Str("downloaded_size", PrettyBytes(reader.n)).
+             Str("downloaded_size", PrettyBytes(reader.Progress)).
              Str("download", servePath).
-             Int64("current-downloads", currentDownloads)
-    if fileInfo.Size() != reader.n {
-        l.Msg("Download Interrupted")
+             Int64("current_downloads", currentDownloads)
+    if fileInfo.Size() != reader.Progress {
+        l.Msg("Interrupted Download")
     } else {
-        l.Msg("Download Complete")
+        l.Msg("Completed Download")
     } 
 }

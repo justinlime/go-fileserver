@@ -1,23 +1,30 @@
 package main
 
 import (
-    "fmt"
+	"fmt"
+)
+
+const (
+    kilobyte float64 = 1024
+    megabyte float64 = 1_048_576 
+    gigabyte float64 = 1_073_741_824 
+    terabyte float64 = 1_099_511_627_776 
 )
 
 func PrettyBytes(bytes int64) string {
     var pretty string
     b := float64(bytes)
     switch {
-    case bytes < 1000:
+    case b < kilobyte:
         pretty = fmt.Sprintf("%0.0fB", b)
-    case bytes < 1_000_000:
-        pretty = fmt.Sprintf("%0.2fKB", b/1_000)
-    case bytes < 1_000_000_000:
-        pretty = fmt.Sprintf("%0.2fMB", b/1_000_000)
-    case bytes < 1_000_000_000_000:
-        pretty = fmt.Sprintf("%0.2fGB", b/1_000_000_000)
+    case b < megabyte:
+        pretty = fmt.Sprintf("%0.2fKB", b/kilobyte)
+    case b < gigabyte:
+        pretty = fmt.Sprintf("%0.2fMB", b/megabyte)
+    case b < terabyte:
+        pretty = fmt.Sprintf("%0.2fGB", b/gigabyte)
     default:
-        pretty = fmt.Sprintf("%0.2fTB", b/1_000_000_000_000)
+        pretty = fmt.Sprintf("%0.2fTB", b/terabyte)
     } 
     return pretty
 }
