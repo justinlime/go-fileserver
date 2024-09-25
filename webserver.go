@@ -1,16 +1,16 @@
 package main
 
 import (
-    "os"
-    "io"
-    "fmt"
-    "time"
-    "net/http"
-    fp "path/filepath"
-    tmpl "html/template"
-    "github.com/rs/zerolog/log"
+	"fmt"
+	tmpl "html/template"
+	"io"
+	"net/http"
+	"os"
+	fp "path/filepath"
+	// "strings"
+	"time"
 
-
+	"github.com/rs/zerolog/log"
 )
 
 type DownloadReader struct {
@@ -40,7 +40,6 @@ var currentDownloads int64 = 0
 func StartServer() {
     log.Info().Str("port", port[1:]).Msg("Webserver started")
     http.Handle("/", middle(rootHandle))
-    http.Handle("/deps/htmx.min.js", middle(htmxHandle))
     http.ListenAndServe(port, nil)
 }
 
@@ -58,15 +57,19 @@ func middle(next func(http.ResponseWriter, *http.Request)) http.Handler {
 
 func rootHandle(w http.ResponseWriter, r *http.Request) {
     // For all other paths not explicitly defined
+    if len(r.URL.Path) > 6 && r.URL.Path[0:6] == "/embed" {
+        embedHandle(w, r)
+        return
+    }
     if r.URL.Path != "/" {
         downloadHandle(w, r)
         return
     }
     t := tmpl.Must(tmpl.ParseFS(
-        tmplFS,
-        "templates/base.html",
-        "templates/dir.html",
-        "templates/sizes.html",
+        embedFS,
+        "embed/templates/base.html",
+        "embed/templates/dir.html",
+        "embed/templates/sizes.html",
     ))
     w.Header().Set("Content-Type", "text/html")
     if err := t.Execute(w, GetFiles(DirToServe)); err != nil {
@@ -74,14 +77,10 @@ func rootHandle(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-// Serve the HTMX dep
-func htmxHandle(w http.ResponseWriter, r *http.Request) {
-    h, err := jsdepsFS.Open("jsdeps/htmx.min.js")
-    if err != nil {
-        log.Fatal().Err(err).Msg("Failed to open htmx")
-    }
-    w.Header().Set("Content-Type", "application/javascript")
-    io.Copy(w, h)
+// Serve the embedded deps
+func embedHandle(w http.ResponseWriter, r *http.Request) {
+    fs := http.FileServer(http.FS(embedFS))
+    fs.ServeHTTP(w, r)
 }
 
 func pageHandle(w http.ResponseWriter, r *http.Request) {

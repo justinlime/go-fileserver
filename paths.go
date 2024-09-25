@@ -21,6 +21,7 @@ func GetFiles(realPath string) []FileForVisit {
     files, err := os.ReadDir(realPath)
     if err != nil {
         log.Error().Err(err).Msg("Failed to read dir")
+        return available
     }
     for _, file := range files {
         if file.IsDir() {
@@ -63,4 +64,30 @@ func GetFiles(realPath string) []FileForVisit {
         }
     }
     return available
+}
+
+// Get the path of every single file in a directory (not including the directories themselves)
+func GetPathsRecursively(dir string) ([]string, error){
+    var paths []string
+    var readDir func(string) error
+    readDir = func (newDir string)  error {
+        files, err := os.ReadDir(newDir)        
+        if err != nil {
+            return err
+        }
+        for _, file := range files {
+            if file.IsDir() {
+                if err := readDir(fp.Join(newDir, file.Name())); err != nil {
+                    return err
+                }
+            } else {
+                paths = append(paths, fp.Join(newDir, file.Name()))
+            }
+        }
+        return nil
+    }
+    if err := readDir(dir); err != nil {
+        return []string{}, err
+    }
+    return paths, nil
 }

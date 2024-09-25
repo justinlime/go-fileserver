@@ -16,15 +16,15 @@ func PrettyBytes(bytes int64) string {
     b := float64(bytes)
     switch {
     case b < kilobyte:
-        pretty = fmt.Sprintf("%0.0fB", b)
+        pretty = fmt.Sprintf("%0.0f B", b)
     case b < megabyte:
-        pretty = fmt.Sprintf("%0.2fKB", b/kilobyte)
+        pretty = fmt.Sprintf("%0.2f KB", b/kilobyte)
     case b < gigabyte:
-        pretty = fmt.Sprintf("%0.2fMB", b/megabyte)
+        pretty = fmt.Sprintf("%0.2f MB", b/megabyte)
     case b < terabyte:
-        pretty = fmt.Sprintf("%0.2fGB", b/gigabyte)
+        pretty = fmt.Sprintf("%0.2f GB", b/gigabyte)
     default:
-        pretty = fmt.Sprintf("%0.2fTB", b/terabyte)
+        pretty = fmt.Sprintf("%0.2f TB", b/terabyte)
     } 
     return pretty
 }

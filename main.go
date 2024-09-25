@@ -19,10 +19,8 @@ var (
     ms float64
     speedLimit int64
 
-    //go:embed templates
-    tmplFS embed.FS
-    //go:embed jsdeps
-    jsdepsFS embed.FS
+    //go:embed embed
+    embedFS embed.FS
 )
 
 func init() {

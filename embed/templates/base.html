@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script src="/deps/htmx.min.js"></script>
+    <script src="/embed/js/htmx.min.js"></script>
+    <link rel="stylesheet" href="/embed/style/index.css">
   </head>
   <body>
-    <div class="downloads" style="display:flex">
+    <div class="downloads">
       {{ template "dir.html" . }}
       {{ template "sizes.html" . }}
     </div>

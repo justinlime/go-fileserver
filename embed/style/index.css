@@ -1,0 +1,123 @@
+/*************** Media Scaling ***************/
+
+
+/* Desktops and Large Screens */
+@media (min-width: 1200px) {
+    :root {
+        font-size: 20px;
+    }
+    body {
+      padding: 2rem 16rem 2rem 16rem;
+    }
+}
+
+/* Small Desktops / Large Tablets */
+@media (min-width: 900px) and (max-width: 1199px) {
+    :root {
+        font-size: 18px;
+    }
+    body {
+      padding: 2rem 4rem 2rem 4rem;
+    }
+}
+
+/* Tablets and Mobile Devices (Landscape) */
+@media (min-width: 600px) and (max-width: 899px) {
+    :root {
+        font-size: 16px;
+    }
+    body {
+      padding: 2rem 3rem 2rem 3rem;
+    }
+}
+
+/* Mobile Devices (Portrait) */
+@media (max-width: 599px) {
+    :root {
+        font-size: 12px;
+    }
+    body {
+      padding: 2rem 2rem 2rem 2rem;
+    }
+}
+
+/*************** Declarations ***************/
+@font-face {
+    font-family: firasans;
+    src: url("fonts/FiraFlex/FiraSans-Regular.ttf") format("truetype");
+    font-weight: normal;
+}
+@font-face {
+    font-family: firasans;
+    src: url("fonts/FiraFlex/FiraSans-SemiBold.ttf") format("truetype");
+    font-weight: semi-bold;
+}
+@font-face {
+    font-family: firasans;
+    src: url("fonts/FiraFlex/FiraSans-Bold.ttf") format("truetype");
+    font-weight: bold;
+}
+@font-face {
+    font-family: firacode;
+    src: url("fonts/FiraCodeNF/FiraCodeNerdFontMono-Regular.ttf") format("truetype");
+    font-weight: normal;
+}
+@font-face {
+    font-family: firacode;
+    src: url("fonts/FiraCodeNF/FiraCodeNerdFontMono-SemiBold.ttf") format("truetype");
+    font-weight: semi-bold;
+}
+@font-face {
+    font-family: firacode;
+    src: url("fonts/FiraCodeNF/FiraCodeNerdFontMono-Bold.ttf") format("truetype");
+    font-weight: bold;
+}
+
+/*************** General ***************/
+
+/* root and body */
+:root{
+    color: #cdd6f4;
+    font-family: firasans,sans-serif;
+    --bg0: #11111B;
+    --bg1: #181825;
+    --bg2: #1e1e2e;
+    --sur0: #313244;
+    --sur1: #45475a;
+    --sur2: #585B70;
+    --out1: #CBA6F7;
+    --out2: #51afef;
+    --out3: #a991f1;
+    --out4: #7cc3f3;
+    --out5: #d39ce3;
+    background-color: var(--bg0);
+}
+body {
+    margin: 0;
+}
+.downloads {
+    display: flex;
+    justify-content: space-between;
+    background: var(--bg2);
+    padding: 1.5rem;
+    border-radius: 2rem;
+}
+ul {
+    margin: 0;
+    padding: 0;
+}
+li {
+    list-style: none;
+}
+
+/* links */
+a {
+    text-decoration: none;
+    color: #89b4fa;
+    /* text-decoration: underline; */
+    transition: .4s;
+    position: relative;
+}
+a:hover {
+    color: brown;
+}
