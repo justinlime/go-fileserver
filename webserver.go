@@ -66,6 +66,7 @@ func rootHandle(w http.ResponseWriter, r *http.Request) {
         tmplFS,
         "templates/base.html",
         "templates/dir.html",
+        "templates/sizes.html",
     ))
     w.Header().Set("Content-Type", "text/html")
     if err := t.Execute(w, GetFiles(DirToServe)); err != nil {
@@ -83,9 +84,18 @@ func htmxHandle(w http.ResponseWriter, r *http.Request) {
     io.Copy(w, h)
 }
 
+func pageHandle(w http.ResponseWriter, r *http.Request) {
+    return
+}
+
 func downloadHandle(w http.ResponseWriter, r *http.Request) {
     servePath := fp.Join(DirToServe, r.URL.Path)
-    currentDownloads += 1
+    fileInfo, err := os.Stat(servePath)
+    if err != nil {
+        log.Error().Err(err).Str("file", servePath).Msg("Failed to stat file")
+        http.NotFound(w, r)
+        return
+    }
     // Open the file and find the file size
     file, err := os.Open(servePath)
     if err != nil {
@@ -94,7 +104,9 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
         return
     }
     defer file.Close()
-    fileInfo, _ := os.Stat(servePath)
+
+    currentDownloads += 1
+
     log.Info().
         Str("requester_ip", GetIP(r)).
         Str("file", servePath).

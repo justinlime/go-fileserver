@@ -10,6 +10,7 @@ import (
 
 type FileForVisit struct {
     Name string    
+    Size string
     RealPath string
     WebPath string
     IsDir bool
@@ -24,10 +25,18 @@ func GetFiles(realPath string) []FileForVisit {
     for _, file := range files {
         if file.IsDir() {
             rp := fp.Join(realPath, file.Name())
+            f, err := os.Stat(rp)
+            if err != nil {
+                log.Error().
+                    Str("file", rp).
+                    Err(err).
+                    Msg("Failed to stat file")
+            }
             a := FileForVisit {
                 Name: file.Name(),
                 RealPath: rp,
                 WebPath: strings.ReplaceAll(rp, DirToServe, ""),
+                Size: PrettyBytes(f.Size()),
                 IsDir: true,
             }
             available = append(available, a)
@@ -36,10 +45,18 @@ func GetFiles(realPath string) []FileForVisit {
     for _, file := range files {
         if !file.IsDir() {
             rp := fp.Join(realPath, file.Name())
+            f, err := os.Stat(rp)
+            if err != nil {
+                log.Error().
+                    Str("file", rp).
+                    Err(err).
+                    Msg("Failed to stat file")
+            }
             a := FileForVisit {
                 Name: file.Name(),
                 RealPath: rp,
                 WebPath: strings.ReplaceAll(rp, DirToServe, ""),
+                Size: PrettyBytes(f.Size()),
                 IsDir: false,
             }
             available = append(available, a)

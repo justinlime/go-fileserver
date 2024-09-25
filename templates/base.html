@@ -4,6 +4,9 @@
     <script src="/deps/htmx.min.js"></script>
   </head>
   <body>
-    {{ template "dir.html" . }}
+    <div class="downloads" style="display:flex">
+      {{ template "dir.html" . }}
+      {{ template "sizes.html" . }}
+    </div>
   </body>
 </html>
