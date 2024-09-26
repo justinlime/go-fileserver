@@ -96,6 +96,18 @@ body {
     margin: 0;
     text-align: center;
 }
+/* search bar  */
+#searchbar {
+    background: var(--sur1);
+    color: #cdd6f4;
+    outline: none;
+    border: none;
+    text-align: center;
+    border-radius: 1rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+}
 #item-view {
     background: var(--bg2);
     padding: 1.5rem;

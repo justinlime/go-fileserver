@@ -1,10 +1,16 @@
 {{ define "content" }}
 <div id="item-view">
   <h1 id="item-path">{{ .WebPath }}</h1>
+  <div id="search-container">
+    <input id="searchbar" 
+           onkeyup="search()" 
+           type="text" name="search" 
+           placeholder="Search...">
+  </div>
   <ul>
   {{ range .Files }}
     {{ if .IsDir }}
-      <li class="item-dir"
+      <li class="item item-dir"
           hx-get="/open{{ .WebPath }}"
           hx-push-url="/open{{ .WebPath }}"
           hx-target="#item-view"
@@ -16,7 +22,7 @@
   {{ end }}
   {{ range .Files }}
     {{ if not .IsDir }}
-      <li class="item-file"
+      <li class="item item-file"
           hx-get="/open{{ .WebPath }}"
           hx-push-url="/open{{ .WebPath }}"
           hx-target="#item-view"
