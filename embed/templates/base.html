@@ -5,8 +5,7 @@
     <link rel="stylesheet" href="/embed/style/index.css">
   </head>
   <body>
-    <div class="downloads">
-      {{ template "dir.html" . }}
-    </div>
+    <h1>{{ .WebPath }}</h1>
+    {{ template "catalog.html" . }}
   </body>
 </html>

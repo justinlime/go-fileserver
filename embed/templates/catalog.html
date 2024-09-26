@@ -1,0 +1,20 @@
+<div class="item-catalog">
+  <ul>
+  {{ range .Files }}
+    {{ if .IsDir }}
+      <li class="item-dir">
+        <span class="item-name">{{ .Name }}</span> <span class="item-size">{{ .PrettySize }}</span>
+      </li>
+    {{ end }}
+  {{ end }}
+  {{ range .Files }}
+    {{ if not .IsDir }}
+      <li class="item-file">
+        <span class="item-name">{{ .Name }}</span> <span class="item-size">{{ .PrettySize }}</span>
+      </li>
+    {{ end }}
+  {{ end }}
+  </ul>
+  <div class="download-button"
+       hx-post="{{ .WebPath }}/download-this-dir">Download All</div>
+</div>

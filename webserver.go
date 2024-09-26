@@ -61,17 +61,21 @@ func rootHandle(w http.ResponseWriter, r *http.Request) {
         embedHandle(w, r)
         return
     }
-    if r.URL.Path != "/" {
+    if fp.Base(r.URL.Path) == "download-this-dir" || fp.Base(r.URL.Path) == "download-this-file" {
         downloadHandle(w, r)
         return
     }
     t := tmpl.Must(tmpl.ParseFS(
         embedFS,
         "embed/templates/base.html",
-        "embed/templates/dir.html",
+        "embed/templates/catalog.html",
     ))
     w.Header().Set("Content-Type", "text/html")
-    if err := t.Execute(w, GetFiles(DirToServe)); err != nil {
+    context, err := GetFileForVisit("/")
+    if err != nil {
+        log.Error().Err(err).Msg("Failed to get file for visit")
+    }
+    if err := t.Execute(w, context); err != nil {
         log.Error().Err(err).Msg("Failed to execute template")
     }
 }
@@ -91,6 +95,13 @@ func directoryHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func downloadHandle(w http.ResponseWriter, r *http.Request) {
+    // var isDir bool
+    // switch fp.Base(r.URL.Path) {
+    // case "download-this-dir":
+    //     isDir = true
+    //     servePath = 
+    // case "download-this-file":
+    // }
     servePath := fp.Join(DirToServe, r.URL.Path)
     fileInfo, err := os.Stat(servePath)
     if err != nil {

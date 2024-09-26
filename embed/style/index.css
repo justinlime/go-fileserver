@@ -94,10 +94,9 @@
 }
 body {
     margin: 0;
+    text-align: center;
 }
-.downloads {
-    display: flex;
-    justify-content: space-between;
+.item-catalog {
     background: var(--bg2);
     padding: 1.5rem;
     border-radius: 2rem;
@@ -109,23 +108,40 @@ ul {
     width: 100%;
 }
 li {
-    padding: 0.25rem 1rem;
+    padding: 0.35rem 1rem;
     list-style: none;
     display: flex;
     justify-content: space-between;
     transition: .2s;
+    cursor: pointer;
 }
 
 li:hover {
     background-color: #11111B;
     border-radius: 1rem;
+    color: #f38ba8;
 }
 
 /* links */
-a {
-    text-decoration: none;
+.item-name {
     color: #89b4fa;
-    /* text-decoration: underline; */
-    transition: .4s;
-    position: relative;
+}
+h1 {
+    text-align: center;
+    font-size: 1.25rem;
+}
+
+.download-button {
+    display: inline-block;
+    text-align: center;
+    margin-top: 1.5rem;
+    cursor: pointer;
+    width: 5rem;
+    transition: .2s;
+    background: #11111B;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+}
+.download-button:hover {
+    color: #f38ba8;
 }
