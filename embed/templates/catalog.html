@@ -2,19 +2,33 @@
   <ul>
   {{ range .Files }}
     {{ if .IsDir }}
-      <li class="item-dir">
-        <span class="item-name">{{ .Name }}</span> <span class="item-size">{{ .PrettySize }}</span>
-      </li>
+      <a href="{{ .WebPath }}">
+        <li class="item-dir">
+          <span class="item-name">{{ .Name }}</span>
+          <span class="item-size">{{ .PrettySize }}</span>
+        </li>
+      </a>
     {{ end }}
   {{ end }}
   {{ range .Files }}
     {{ if not .IsDir }}
-      <li class="item-file">
-        <span class="item-name">{{ .Name }}</span> <span class="item-size">{{ .PrettySize }}</span>
-      </li>
+      <a href="{{ .WebPath }}/handle-download">
+        <li class="item-file">
+          <span class="item-name">{{ .Name }}</span>
+          <span class="item-size">{{ .PrettySize }}</span>
+        </li>
+      </a>
     {{ end }}
   {{ end }}
   </ul>
-  <div class="download-button"
-       hx-post="{{ .WebPath }}/download-this-dir">Download All</div>
+  <a class="download-button"
+       {{ if eq .WebPath "/" }}
+         href="/handle-download"
+       {{ else }}
+         href="{{ .WebPath }}/handle-download"
+       {{ end }}>
+    <span>Download <br> All</span>
+    <br>
+    <span> {{ .PrettySize }}</span>
+  </a>
 </div>

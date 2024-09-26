@@ -101,6 +101,7 @@ body {
     padding: 1.5rem;
     border-radius: 2rem;
 }
+/* links */
 ul {
     margin: 0;
     padding: 0;
@@ -121,10 +122,12 @@ li:hover {
     border-radius: 1rem;
     color: #f38ba8;
 }
-
-/* links */
 .item-name {
     color: #89b4fa;
+}
+a {
+    text-decoration: none;
+    color: inherit;
 }
 h1 {
     text-align: center;

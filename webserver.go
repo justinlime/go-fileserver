@@ -7,9 +7,8 @@ import (
 	"net/http"
 	"os"
 	fp "path/filepath"
-	// "strings"
+	"strings"
 	"time"
-
 	"github.com/rs/zerolog/log"
 )
 
@@ -56,12 +55,11 @@ func middle(next func(http.ResponseWriter, *http.Request)) http.Handler {
 }
 
 func rootHandle(w http.ResponseWriter, r *http.Request) {
-    // For all other paths not explicitly defined
     if len(r.URL.Path) > 6 && r.URL.Path[0:6] == "/embed" {
         embedHandle(w, r)
         return
     }
-    if fp.Base(r.URL.Path) == "download-this-dir" || fp.Base(r.URL.Path) == "download-this-file" {
+    if fp.Base(r.URL.Path) == "handle-download" {
         downloadHandle(w, r)
         return
     }
@@ -95,22 +93,13 @@ func directoryHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func downloadHandle(w http.ResponseWriter, r *http.Request) {
-    // var isDir bool
-    // switch fp.Base(r.URL.Path) {
-    // case "download-this-dir":
-    //     isDir = true
-    //     servePath = 
-    // case "download-this-file":
-    // }
-    servePath := fp.Join(DirToServe, r.URL.Path)
-    fileInfo, err := os.Stat(servePath)
+    ffv, err := GetFileForVisit(strings.TrimSuffix(r.URL.Path, "/handle-download"))
     if err != nil {
-        log.Error().Err(err).Str("file", servePath).Msg("Failed to stat file")
-        http.NotFound(w, r)
+        log.Error().Err(err).Str("path", r.URL.Path).Msg("Failed to serve download")
+        http.NotFound(w,r)
         return
     }
-    // Open the file and find the file size
-    file, err := os.Open(servePath)
+    file, err := os.Open(ffv.RealPath)
     if err != nil {
         log.Error().Err(err).Msg("Failed to open download file")
         http.NotFound(w, r)
@@ -122,13 +111,14 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
 
     log.Info().
         Str("requester_ip", GetIP(r)).
-        Str("file", servePath).
+        Str("file", ffv.RealPath).
         Int64("current_downloads", currentDownloads).
         Str("available_bandwidth", fmt.Sprintf("%s/s", PrettyBytes(speedLimit/currentDownloads))).
         Msg("New Download")
     // Download
     w.Header().Set("Content-Type", "application/octet-stream")
-    w.Header().Set("Content-Length", fmt.Sprintf("%d", fileInfo.Size()))
+    w.Header().Set("Content-Length", fmt.Sprintf("%d", ffv.Size))
+    w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", ffv.Name))
     begin := time.Now()
     reader := &DownloadReader{Reader: file}
     io.Copy(w, reader)
@@ -137,9 +127,9 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
              Str("requester_ip", GetIP(r)).
              Str("time_elapsed", PrettyTime(time.Since(begin).Seconds())).
              Str("downloaded_size", PrettyBytes(reader.Progress)).
-             Str("download", servePath).
+             Str("download", ffv.RealPath).
              Int64("current_downloads", currentDownloads)
-    if fileInfo.Size() != reader.Progress {
+    if ffv.Size != reader.Progress {
         l.Msg("Interrupted Download")
     } else {
         l.Msg("Completed Download")
