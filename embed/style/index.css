@@ -96,7 +96,7 @@ body {
     margin: 0;
     text-align: center;
 }
-.item-catalog {
+#item-catalog {
     background: var(--bg2);
     padding: 1.5rem;
     border-radius: 2rem;

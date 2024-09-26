@@ -1,13 +1,12 @@
-<div class="item-catalog">
+<div id="item-catalog">
+  <h1>{{ .WebPath }}</h1>
   <ul>
   {{ range .Files }}
     {{ if .IsDir }}
-      <a href="{{ .WebPath }}">
-        <li class="item-dir">
-          <span class="item-name">{{ .Name }}</span>
-          <span class="item-size">{{ .PrettySize }}</span>
-        </li>
-      </a>
+      <li class="item-dir"  hx-get="{{ .WebPath }}/handle-open" hx-target="#item-catalog" hx-swap="outerHTML">
+        <span class="item-name">{{ .Name }}</span>
+        <span class="item-size">{{ .PrettySize }}</span>
+      </li>
     {{ end }}
   {{ end }}
   {{ range .Files }}

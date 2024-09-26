@@ -63,6 +63,10 @@ func rootHandle(w http.ResponseWriter, r *http.Request) {
         downloadHandle(w, r)
         return
     }
+    if fp.Base(r.URL.Path) == "handle-open" {
+        openHandle(w, r)
+        return
+    }
     t := tmpl.Must(tmpl.ParseFS(
         embedFS,
         "embed/templates/base.html",
@@ -85,6 +89,24 @@ func embedHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func openHandle(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "text/html")
+    context, err := GetFileForVisit(strings.TrimSuffix(r.URL.Path, "/handle-open"))
+    if err != nil {
+        log.Error().Err(err).Msg("Failed to get file for visit")
+    }
+    var t *tmpl.Template
+    if context.IsDir {
+        t = tmpl.Must(tmpl.ParseFS(
+            embedFS,
+            "embed/templates/base.html",
+            "embed/templates/catalog.html",
+        ))
+    } else {
+        
+    }
+    if err := t.Execute(w, context); err != nil {
+        log.Error().Err(err).Msg("Failed to execute template")
+    }
     return
 }
 
