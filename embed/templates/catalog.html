@@ -3,7 +3,11 @@
   <ul>
   {{ range .Files }}
     {{ if .IsDir }}
-      <li class="item-dir"  hx-get="{{ .WebPath }}/handle-open" hx-target="#item-catalog" hx-swap="outerHTML">
+      <li class="item-dir"
+          hx-get="/open{{ .WebPath }}"
+          hx-push-url="/open{{ .WebPath }}"
+          hx-target="#item-catalog"
+          hx-swap="outerHTML">
         <span class="item-name">{{ .Name }}</span>
         <span class="item-size">{{ .PrettySize }}</span>
       </li>
@@ -11,7 +15,7 @@
   {{ end }}
   {{ range .Files }}
     {{ if not .IsDir }}
-      <a href="{{ .WebPath }}/handle-download">
+      <a href="/download{{ .WebPath }}">
         <li class="item-file">
           <span class="item-name">{{ .Name }}</span>
           <span class="item-size">{{ .PrettySize }}</span>
@@ -22,11 +26,11 @@
   </ul>
   <a class="download-button"
        {{ if eq .WebPath "/" }}
-         href="/handle-download"
+         href=""
        {{ else }}
-         href="{{ .WebPath }}/handle-download"
+         href=""
        {{ end }}>
-    <span>Download <br> All</span>
+    <span>Download All</span>
     <br>
     <span> {{ .PrettySize }}</span>
   </a>

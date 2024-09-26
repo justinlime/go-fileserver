@@ -59,26 +59,13 @@ func rootHandle(w http.ResponseWriter, r *http.Request) {
         embedHandle(w, r)
         return
     }
-    if fp.Base(r.URL.Path) == "handle-download" {
+    if len(r.URL.Path) > 9 && r.URL.Path[0:9] == "/download" {
         downloadHandle(w, r)
         return
     }
-    if fp.Base(r.URL.Path) == "handle-open" {
+    if r.URL.Path == "/" || len(r.URL.Path) > 5 && r.URL.Path[0:5] == "/open" {
         openHandle(w, r)
         return
-    }
-    t := tmpl.Must(tmpl.ParseFS(
-        embedFS,
-        "embed/templates/base.html",
-        "embed/templates/catalog.html",
-    ))
-    w.Header().Set("Content-Type", "text/html")
-    context, err := GetFileForVisit("/")
-    if err != nil {
-        log.Error().Err(err).Msg("Failed to get file for visit")
-    }
-    if err := t.Execute(w, context); err != nil {
-        log.Error().Err(err).Msg("Failed to execute template")
     }
 }
 
@@ -90,7 +77,7 @@ func embedHandle(w http.ResponseWriter, r *http.Request) {
 
 func openHandle(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "text/html")
-    context, err := GetFileForVisit(strings.TrimSuffix(r.URL.Path, "/handle-open"))
+    context, err := GetFileForVisit(strings.TrimPrefix(r.URL.Path, "/open"))
     if err != nil {
         log.Error().Err(err).Msg("Failed to get file for visit")
     }
@@ -102,7 +89,11 @@ func openHandle(w http.ResponseWriter, r *http.Request) {
             "embed/templates/catalog.html",
         ))
     } else {
-        
+        t = tmpl.Must(tmpl.ParseFS(
+            embedFS,
+            "embed/templates/base.html",
+            "embed/templates/open.html",
+        ))
     }
     if err := t.Execute(w, context); err != nil {
         log.Error().Err(err).Msg("Failed to execute template")
@@ -115,7 +106,7 @@ func directoryHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func downloadHandle(w http.ResponseWriter, r *http.Request) {
-    ffv, err := GetFileForVisit(strings.TrimSuffix(r.URL.Path, "/handle-download"))
+    ffv, err := GetFileForVisit(strings.TrimPrefix(r.URL.Path, "/download"))
     if err != nil {
         log.Error().Err(err).Str("path", r.URL.Path).Msg("Failed to serve download")
         http.NotFound(w,r)
