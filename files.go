@@ -15,6 +15,7 @@ type FileForVisit struct {
     WebPath string
     ParentWebPath string
     IsDir bool
+    Ext string
     Files []FileForVisit
 }
 
@@ -24,13 +25,22 @@ func GetFileForVisit(webPath string) (FileForVisit, error) {
     if err != nil {
         return FileForVisit{}, fmt.Errorf("Failed to stat the file for visit: %v", err)
     }
+    // FIXME idk what is causing the behavior for this sloppy fix
+    if webPath == "" {
+        webPath = "/"
+    }
+    parent := strings.TrimSuffix(strings.TrimSuffix(webPath, fileInfo.Name()), "/")
+    if parent == "" {
+        parent = "/"
+    }
 
     ffv := FileForVisit {
         Name: fileInfo.Name(),
         RealPath: realPath,
         WebPath: webPath,
-        ParentWebPath: strings.TrimSuffix(webPath, fileInfo.Name()),
+        ParentWebPath: parent,
         IsDir: fileInfo.IsDir(),
+        Ext: fp.Ext(realPath),
     }
     if ffv.IsDir {
         var size int64

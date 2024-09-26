@@ -121,7 +121,7 @@ ul {
     width: 100%;
 }
 li {
-    padding: 0.35rem 1rem;
+    padding: 0.45rem 1rem;
     list-style: none;
     display: flex;
     justify-content: space-between;
@@ -136,6 +136,8 @@ li:hover {
 }
 .item-name {
     color: #89b4fa;
+    text-align: left;
+    word-wrap: break-word;
 }
 a {
     text-decoration: none;

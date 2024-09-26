@@ -55,15 +55,15 @@ func middle(next func(http.ResponseWriter, *http.Request)) http.Handler {
 }
 
 func rootHandle(w http.ResponseWriter, r *http.Request) {
-    if len(r.URL.Path) > 6 && r.URL.Path[0:6] == "/embed" {
+    if len(r.URL.Path) >= 6 && r.URL.Path[0:6] == "/embed" {
         embedHandle(w, r)
         return
     }
-    if len(r.URL.Path) > 9 && r.URL.Path[0:9] == "/download" {
+    if len(r.URL.Path) >= 9 && r.URL.Path[0:9] == "/download" {
         downloadHandle(w, r)
         return
     }
-    if r.URL.Path == "/" || len(r.URL.Path) > 5 && r.URL.Path[0:5] == "/open" {
+    if r.URL.Path == "/" || len(r.URL.Path) >= 5 && r.URL.Path[0:5] == "/open" {
         openHandle(w, r)
         return
     }
