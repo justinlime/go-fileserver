@@ -96,7 +96,7 @@ body {
     margin: 0;
     text-align: center;
 }
-#item-catalog {
+#item-view {
     background: var(--bg2);
     padding: 1.5rem;
     border-radius: 2rem;
@@ -129,9 +129,13 @@ a {
     text-decoration: none;
     color: inherit;
 }
-h1 {
+#item-path {
     text-align: center;
     font-size: 1.25rem;
+    background-color: #11111B;
+    border-radius: 1.5rem;
+    padding: 1rem 0;
+    margin: 1.5rem 5rem;
 }
 
 .download-button {

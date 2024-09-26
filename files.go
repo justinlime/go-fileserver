@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	fp "path/filepath"
+	"strings"
 )
 
 type FileForVisit struct {
@@ -12,6 +13,7 @@ type FileForVisit struct {
     PrettySize string
     RealPath string
     WebPath string
+    ParentWebPath string
     IsDir bool
     Files []FileForVisit
 }
@@ -22,10 +24,12 @@ func GetFileForVisit(webPath string) (FileForVisit, error) {
     if err != nil {
         return FileForVisit{}, fmt.Errorf("Failed to stat the file for visit: %v", err)
     }
+
     ffv := FileForVisit {
         Name: fileInfo.Name(),
         RealPath: realPath,
         WebPath: webPath,
+        ParentWebPath: strings.TrimSuffix(webPath, fileInfo.Name()),
         IsDir: fileInfo.IsDir(),
     }
     if ffv.IsDir {

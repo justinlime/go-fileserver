@@ -1,12 +1,13 @@
-<div id="item-catalog">
-  <h1>{{ .WebPath }}</h1>
+{{ define "content" }}
+<div id="item-view">
+  <h1 id="item-path">{{ .WebPath }}</h1>
   <ul>
   {{ range .Files }}
     {{ if .IsDir }}
       <li class="item-dir"
           hx-get="/open{{ .WebPath }}"
           hx-push-url="/open{{ .WebPath }}"
-          hx-target="#item-catalog"
+          hx-target="#item-view"
           hx-swap="outerHTML">
         <span class="item-name">{{ .Name }}</span>
         <span class="item-size">{{ .PrettySize }}</span>
@@ -15,12 +16,14 @@
   {{ end }}
   {{ range .Files }}
     {{ if not .IsDir }}
-      <a href="/download{{ .WebPath }}">
-        <li class="item-file">
+      <li class="item-file"
+          hx-get="/open{{ .WebPath }}"
+          hx-push-url="/open{{ .WebPath }}"
+          hx-target="#item-view"
+          hx-swap="outerHTML">
           <span class="item-name">{{ .Name }}</span>
           <span class="item-size">{{ .PrettySize }}</span>
-        </li>
-      </a>
+      </li>
     {{ end }}
   {{ end }}
   </ul>
@@ -35,3 +38,4 @@
     <span> {{ .PrettySize }}</span>
   </a>
 </div>
+{{ end }}
