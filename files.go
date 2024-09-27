@@ -25,7 +25,6 @@ func GetFileForVisit(webPath string) (FileForVisit, error) {
     if err != nil {
         return FileForVisit{}, fmt.Errorf("Failed to stat the file for visit: %v", err)
     }
-    // FIXME idk what is causing the behavior for this sloppy fix
     if webPath == "" {
         webPath = "/"
     }

@@ -1,47 +1,45 @@
 {{ define "content" }}
-<div id="item-view">
-  <h1 id="item-path">{{ .WebPath }}</h1>
-  <div id="search-container">
-    <input id="searchbar" 
-           onkeyup="search()" 
-           type="text" name="search" 
-           placeholder="Search...">
-  </div>
-  <ul>
-  {{ range .Files }}
-    {{ if .IsDir }}
-      <li class="item item-dir"
-          hx-get="/open{{ .WebPath }}"
-          hx-push-url="/open{{ .WebPath }}"
-          hx-target="#item-view"
-          hx-swap="outerHTML">
+<h1 id="item-path">{{ .WebPath }}</h1>
+<div id="search-container">
+  <input id="searchbar" 
+         onkeyup="search()" 
+         type="text" name="search" 
+         placeholder="Search...">
+</div>
+<ul>
+{{ range .Files }}
+  {{ if .IsDir }}
+    <li class="item item-dir"
+        hx-get="/open{{ .WebPath }}"
+        hx-push-url="/open{{ .WebPath }}"
+        hx-target="#page-content-container"
+        hx-swap="outerHTML">
+      <span class="item-name">{{ .Name }}</span>
+      <span class="item-size">{{ .PrettySize }}</span>
+    </li>
+  {{ end }}
+{{ end }}
+{{ range .Files }}
+  {{ if not .IsDir }}
+    <li class="item item-file"
+        hx-get="/open{{ .WebPath }}"
+        hx-push-url="/open{{ .WebPath }}"
+        hx-target="#page-content-container"
+        hx-swap="outerHTML">
         <span class="item-name">{{ .Name }}</span>
         <span class="item-size">{{ .PrettySize }}</span>
-      </li>
-    {{ end }}
+    </li>
   {{ end }}
-  {{ range .Files }}
-    {{ if not .IsDir }}
-      <li class="item item-file"
-          hx-get="/open{{ .WebPath }}"
-          hx-push-url="/open{{ .WebPath }}"
-          hx-target="#item-view"
-          hx-swap="outerHTML">
-          <span class="item-name">{{ .Name }}</span>
-          <span class="item-size">{{ .PrettySize }}</span>
-      </li>
-    {{ end }}
-  {{ end }}
-  </ul>
-  <a class="download-button"
-       {{ if eq .WebPath "/" }}
-         href=""
-       {{ else }}
-         href=""
-       {{ end }}>
-    <span>Download All</span>
-    <br>
-    <span> {{ .PrettySize }}</span>
-  </a>
-</div>
+{{ end }}
+</ul>
+<a class="download-button"
+     {{ if eq .WebPath "/" }}
+       href=""
+     {{ else }}
+       href=""
+     {{ end }}>
+  <span>Download All</span>
+  <br>
+  <span> {{ .PrettySize }}</span>
+</a>
 {{ end }}

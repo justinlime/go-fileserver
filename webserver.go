@@ -86,13 +86,15 @@ func openHandle(w http.ResponseWriter, r *http.Request) {
         t = tmpl.Must(tmpl.ParseFS(
             embedFS,
             "embed/templates/base.html",
+            "embed/templates/page.html",
             "embed/templates/catalog.html",
         ))
     } else {
         t = tmpl.Must(tmpl.ParseFS(
             embedFS,
             "embed/templates/base.html",
-            "embed/templates/open.html",
+            "embed/templates/page.html",
+            "embed/templates/open-generic.html",
         ))
     }
     if err := t.Execute(w, context); err != nil {
@@ -131,7 +133,7 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
     // Download
     w.Header().Set("Content-Type", "application/octet-stream")
     w.Header().Set("Content-Length", fmt.Sprintf("%d", ffv.Size))
-    w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", ffv.Name))
+    // w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", ffv.Name))
     begin := time.Now()
     reader := &DownloadReader{Reader: file}
     io.Copy(w, reader)
