@@ -166,3 +166,11 @@ a {
 .download-button:hover {
     color: #f38ba8;
 }
+
+#item-name-title {
+    font-size: 1.5rem;
+}
+.image-preview {
+    display: block;
+    width: 100%;
+}

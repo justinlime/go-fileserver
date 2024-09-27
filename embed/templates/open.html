@@ -1,6 +1,7 @@
 {{ define "content" }}
 <h1 id="item-path">{{ .ParentWebPath }}</h1>
-<h1 id="item-name">{{ .Name }}</h1>
+<h1 id="item-name-title">{{ .Name }}</h1>
+{{ template "preview" . }}
 <a class="download-button" href="/download{{ .WebPath }}">
   <span>Download File</span>
   <br>
