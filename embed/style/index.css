@@ -14,30 +14,57 @@
 /* Small Desktops / Large Tablets */
 @media (min-width: 900px) and (max-width: 1199px) {
     :root {
-        font-size: 18px;
+        font-size: 24px;
     }
     body {
-      padding: 2rem 4rem 2rem 4rem;
+      padding: 2rem 2rem 2rem 2rem;
+    }
+    li {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    li * {
+        text-align: center !important;
     }
 }
 
 /* Tablets and Mobile Devices (Landscape) */
 @media (min-width: 600px) and (max-width: 899px) {
     :root {
-        font-size: 16px;
+        font-size: 26px;
     }
     body {
-      padding: 2rem 3rem 2rem 3rem;
+      padding: 2rem 2rem 2rem 2rem;
+    }
+    li {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    li * {
+        text-align: center !important;
     }
 }
 
 /* Mobile Devices (Portrait) */
 @media (max-width: 599px) {
     :root {
-        font-size: 12px;
+        font-size: 28px;
     }
     body {
       padding: 2rem 2rem 2rem 2rem;
+    }
+    li {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    li * {
+        text-align: center !important;
     }
 }
 
@@ -127,17 +154,20 @@ li {
     justify-content: space-between;
     transition: .2s;
     cursor: pointer;
+    border-radius: 1rem;
+    background-color: var(--bg1);
+    margin: 1rem 0;
 }
 
 li:hover {
     background-color: #11111B;
-    border-radius: 1rem;
     color: #f38ba8;
 }
 .item-name {
     color: #89b4fa;
     text-align: left;
     word-wrap: break-word;
+    word-break: break-word;
 }
 a {
     text-decoration: none;
@@ -148,14 +178,15 @@ a {
     font-size: 1.25rem;
     background-color: #11111B;
     border-radius: 1.5rem;
-    padding: 1rem 0;
-    margin: 1.5rem 5rem;
+    padding: 1rem 1rem;
+    margin: 1.5rem 5rem 3rem 5rem;
+    word-wrap: break-word;
 }
 
 .download-button {
     display: inline-block;
     text-align: center;
-    margin-top: 1.5rem;
+    margin-top: 3rem;
     cursor: pointer;
     width: 7rem;
     transition: .2s;
@@ -168,10 +199,18 @@ a {
 }
 
 #item-name-title {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
+    color: #89b4fa;
+    word-wrap: break-word;
+    margin: 0;
+    padding: 0;
+}
+.image-preview-containter {
+    display: block;
 }
 .image-preview {
-    display: block;
-    width: 100%;
+    margin-top: 1rem;
+    max-width: 100%;
     cursor: pointer;
+    text-align: center;
 }
