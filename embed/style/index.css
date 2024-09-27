@@ -173,4 +173,5 @@ a {
 .image-preview {
     display: block;
     width: 100%;
+    cursor: pointer;
 }

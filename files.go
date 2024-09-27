@@ -39,7 +39,6 @@ func GetFileForVisit(webPath string) (FileForVisit, error) {
         WebPath: webPath,
         ParentWebPath: parent,
         IsDir: fileInfo.IsDir(),
-        Ext: fp.Ext(realPath),
     }
     if ffv.IsDir {
         var size int64

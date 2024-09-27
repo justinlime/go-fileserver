@@ -67,14 +67,17 @@ func rootHandle(w http.ResponseWriter, r *http.Request) {
         openHandle(w, r)
         return
     }
-    // Genericly handle all the rest
+    genericHandle(w, r)
+}
+
+// Serve everything else
+func genericHandle(w http.ResponseWriter, r *http.Request) {
     http.FileServer(http.Dir(DirToServe)).ServeHTTP(w, r)
 }
 
 // Serve the embedded deps
 func embedHandle(w http.ResponseWriter, r *http.Request) {
-    fs := http.FileServer(http.FS(embedFS))
-    fs.ServeHTTP(w, r)
+    http.FileServer(http.FS(embedFS)).ServeHTTP(w, r)
 }
 
 func openHandle(w http.ResponseWriter, r *http.Request) {
@@ -92,23 +95,13 @@ func openHandle(w http.ResponseWriter, r *http.Request) {
             "embed/templates/catalog.html",
         ))
     } else {
-        if context.Ext == ".png" {
-            t = tmpl.Must(tmpl.ParseFS(
-                embedFS,
-                "embed/templates/base.html",
-                "embed/templates/page.html",
-                "embed/templates/open.html",
-                "embed/templates/preview-image.html",
-            ))
-        } else {
-            t = tmpl.Must(tmpl.ParseFS(
-                embedFS,
-                "embed/templates/base.html",
-                "embed/templates/page.html",
-                "embed/templates/open.html",
-                "embed/templates/preview-generic.html",
-            ))
-        }
+        t = tmpl.Must(tmpl.ParseFS(
+            embedFS,
+            "embed/templates/base.html",
+            "embed/templates/page.html",
+            "embed/templates/open.html",
+            fmt.Sprintf("embed/templates/preview-%s.html", ContentType(context.RealPath)),
+        ))
     }
     if err := t.Execute(w, context); err != nil {
         log.Error().Err(err).Msg("Failed to execute template")
