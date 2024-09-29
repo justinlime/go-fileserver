@@ -1,6 +1,6 @@
 {{ define "preview" }}
 <script src="/embed/js/fullscreen_img.js" defer></script>
 <div class="image-preview-containter">
-  <img class="image-preview" src="{{ .WebPath }}" alt="{{ .WebPath }}" onclick="openFullscreen()">
+  <img class="image-preview" src="/image{{ .WebPath }}" alt="{{ .WebPath }}" onclick="openFullscreen()">
 </div>
 {{ end }}

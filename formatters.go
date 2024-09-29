@@ -9,6 +9,10 @@ const (
     megabyte float64 = 1_048_576 
     gigabyte float64 = 1_073_741_824 
     terabyte float64 = 1_099_511_627_776 
+
+    minute   float64 = 60
+    hour     float64 = 3600
+    day      float64 = 216_000
 )
 
 func PrettyBytes(bytes int64) string {
@@ -32,14 +36,14 @@ func PrettyBytes(bytes int64) string {
 func PrettyTime(seconds float64) string {
     var pretty string
     switch {
-    case seconds < 60:
+    case seconds < minute:
        pretty = fmt.Sprintf("%0.2fsecs", seconds) 
-    case seconds < 3600:
-       pretty = fmt.Sprintf("%0.2fmins", seconds/60) 
-    case seconds < 216000:
-       pretty = fmt.Sprintf("%0.2fhours", seconds/3600) 
+    case seconds < hour:
+       pretty = fmt.Sprintf("%0.2fmins", seconds/minute) 
+    case seconds < day:
+       pretty = fmt.Sprintf("%0.2fhours", seconds/hour) 
     default:
-       pretty = fmt.Sprintf("%0.2fdays", seconds/216000) 
+       pretty = fmt.Sprintf("%0.2fdays", seconds/day) 
     }
     return pretty 
 }

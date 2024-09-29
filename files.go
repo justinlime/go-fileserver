@@ -15,7 +15,7 @@ type FileForVisit struct {
     WebPath string
     ParentWebPath string
     IsDir bool
-    Ext string
+    MimeType string
     Files []FileForVisit
 }
 
@@ -32,13 +32,13 @@ func GetFileForVisit(webPath string) (FileForVisit, error) {
     if parent == "" {
         parent = "/"
     }
-
     ffv := FileForVisit {
         Name: fileInfo.Name(),
         RealPath: realPath,
         WebPath: webPath,
         ParentWebPath: parent,
         IsDir: fileInfo.IsDir(),
+        MimeType: InferMimeType(realPath),
     }
     if ffv.IsDir {
         var size int64

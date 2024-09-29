@@ -1,0 +1,9 @@
+{{ define "preview" }}
+<script src="/embed/js/fullscreen_img.js" defer></script>
+<div class="video-preview-containter">
+  <video controls>
+    <source src="/video{{ .WebPath }}" type="video/mp4">
+    Can't preview video
+  </video>
+</div>
+{{ end }}

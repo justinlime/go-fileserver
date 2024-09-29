@@ -12,29 +12,6 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type DownloadReader struct {
-    io.Reader
-    Progress int64
-    LimitBucket int
-}
-
-func (w *DownloadReader) Read(p []byte) (int, error) {
-    w.Limit(p)
-    n, err := w.Reader.Read(p) 
-    w.Progress += int64(n)
-    return n, err
-}
-
-func (w *DownloadReader) Limit(p []byte) {
-    availableSpeed := speedLimit / currentDownloads
-    if len(p) + w.LimitBucket >= int(availableSpeed) {
-        time.Sleep(time.Second * 1)
-        w.LimitBucket = 0
-    }
-    w.LimitBucket += len(p)
-}
-
-var currentDownloads int64 = 0
 
 func StartServer() {
     log.Info().Str("port", port[1:]).Msg("Webserver started")
@@ -63,19 +40,35 @@ func rootHandle(w http.ResponseWriter, r *http.Request) {
         downloadHandle(w, r)
         return
     }
+    if len(r.URL.Path) >= 6 && r.URL.Path[0:6] == "/image" || r.URL.Path == "/favicon.ico" {
+        imageHandle(w, r)
+        return
+    }
     if r.URL.Path == "/" || len(r.URL.Path) >= 5 && r.URL.Path[0:5] == "/open" {
         openHandle(w, r)
         return
     }
-    genericHandle(w, r)
 }
 
-// Serve everything else
-func genericHandle(w http.ResponseWriter, r *http.Request) {
-    http.FileServer(http.Dir(DirToServe)).ServeHTTP(w, r)
+func imageHandle(w http.ResponseWriter, r *http.Request) {
+    context, err := GetFileForVisit(strings.TrimPrefix(r.URL.Path, "/image"))
+    if err != nil {
+        http.NotFound(w, r)
+        return
+    }
+    if strings.Contains(context.MimeType, "image") {
+        w.Header().Set("Content-Type", context.MimeType)
+        file, err := os.Open(context.RealPath)
+        if err != nil {
+            http.NotFound(w, r)
+            return
+        }
+        io.Copy(w, file)
+    } else {
+        http.NotFound(w, r)
+    }
 }
 
-// Serve the embedded deps
 func embedHandle(w http.ResponseWriter, r *http.Request) {
     http.FileServer(http.FS(embedFS)).ServeHTTP(w, r)
 }
@@ -85,6 +78,8 @@ func openHandle(w http.ResponseWriter, r *http.Request) {
     context, err := GetFileForVisit(strings.TrimPrefix(r.URL.Path, "/open"))
     if err != nil {
         log.Error().Err(err).Msg("Failed to get file for visit")
+        http.NotFound(w, r)
+        return
     }
     var t *tmpl.Template
     if context.IsDir {
@@ -95,21 +90,27 @@ func openHandle(w http.ResponseWriter, r *http.Request) {
             "embed/templates/catalog.html",
         ))
     } else {
+        var preview string
+        mtype := context.MimeType
+        switch {
+        case strings.Contains(mtype, "image"):
+            preview = "image" 
+        case strings.Contains(mtype, "video"):
+            preview = "generic" 
+        default:
+            preview = "generic"
+        }
         t = tmpl.Must(tmpl.ParseFS(
             embedFS,
             "embed/templates/base.html",
             "embed/templates/page.html",
             "embed/templates/open.html",
-            fmt.Sprintf("embed/templates/preview-%s.html", ContentType(context.RealPath)),
+            fmt.Sprintf("embed/templates/preview-%s.html", preview),
         ))
     }
     if err := t.Execute(w, context); err != nil {
         log.Error().Err(err).Msg("Failed to execute template")
     }
-    return
-}
-
-func directoryHandle(w http.ResponseWriter, r *http.Request) {
     return
 }
 
