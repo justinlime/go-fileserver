@@ -99,6 +99,11 @@ func openHandle(w http.ResponseWriter, r *http.Request) {
         case strings.Contains(mtype, "image"):
             preview = "image" 
         case strings.Contains(mtype, "text"):
+            // limit display size to half a MB
+            if context.Size > 524_288 {
+                preview = "generic" 
+                break
+            }
             preview = "text" 
             hl, err := HighlightText(context.RealPath)
             if err != nil {
