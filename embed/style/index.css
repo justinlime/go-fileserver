@@ -122,6 +122,7 @@
 body {
     margin: 0;
     text-align: center;
+    background-color: var(--bg0);
 }
 /* search bar  */
 #searchbar {
@@ -213,4 +214,55 @@ a {
     max-width: 100%;
     cursor: pointer;
     text-align: center;
+}
+
+/* embedded text */
+.text-preview-container {
+    background-color: #11111B;
+    padding: 0.1rem 0rem 0.1rem 1rem;
+    border-radius: 1rem;
+    margin-top: 1rem;
+}
+.text-preview-container > pre {
+    background-color: #11111B !important;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 35rem;
+}
+.text-preview-container > pre > code {
+    margin: 1rem;
+}
+.text-preview-container > pre > * {
+    background-color: #11111B !important;
+    font-size: 0.75rem;
+}
+
+/* scrollbars  */
+body::-webkit-scrollbar,
+.text-preview-container pre::-webkit-scrollbar, 
+.text-preview-container pre::-webkit-scrollbar {
+    width: 0.5rem; /* Width of the scrollbar */
+    height: 0.5rem;
+}
+
+.text-preview-container pre::-webkit-scrollbar-track, 
+.text-preview-container pre::-webkit-scrollbar-track {
+    background: var(--bg0); /* Background color of the track */
+}
+
+body::-webkit-scrollbar-track {
+    background: var(--bg1);
+} 
+
+body::-webkit-scrollbar-thumb, 
+.text-preview-container pre::-webkit-scrollbar-thumb, 
+.text-preview-container pre::-webkit-scrollbar-thumb {
+  background: var(--sur1); /* Color of the scroll thumb */
+  border-radius: 1rem; /* Rounded corners for the thumb */
+}
+
+body::-webkit-scrollbar-thumb:hover, 
+.text-preview-container pre::-webkit-scrollbar-thumb:hover, 
+.text-preview-container pre::-webkit-scrollbar-thumb:hover {
+  background: var(--sur2); /* Color of the scroll thumb */
 }

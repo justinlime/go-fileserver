@@ -1,14 +1,15 @@
 package main
 
 import (
-	"fmt"
-	tmpl "html/template"
-	"io"
-	"net/http"
 	"os"
-	fp "path/filepath"
-	"strings"
+	"io"
+	"fmt"
 	"time"
+	"strings"
+	"net/http"
+	fp "path/filepath"
+	tmpl "html/template"
+
 	"github.com/rs/zerolog/log"
 )
 
@@ -81,6 +82,8 @@ func openHandle(w http.ResponseWriter, r *http.Request) {
         http.NotFound(w, r)
         return
     }
+
+    // log.Info().Str("path", context.RealPath).Str("mime", context.MimeType).Msg("MIME")
     var t *tmpl.Template
     if context.IsDir {
         t = tmpl.Must(tmpl.ParseFS(
@@ -95,8 +98,17 @@ func openHandle(w http.ResponseWriter, r *http.Request) {
         switch {
         case strings.Contains(mtype, "image"):
             preview = "image" 
-        case strings.Contains(mtype, "video"):
-            preview = "generic" 
+        case strings.Contains(mtype, "text"):
+            preview = "text" 
+            hl, err := HighlightText(context.RealPath)
+            if err != nil {
+                log.Error().Err(err).
+                    Str("file", context.RealPath).
+                    Msg("Failed to highlight text for file")
+            }
+            context.Extra = map[string]interface{}{
+                "HighlightedText": tmpl.HTML(hl),    
+            }
         default:
             preview = "generic"
         }

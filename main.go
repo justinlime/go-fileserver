@@ -26,7 +26,7 @@ var (
 func init() {
     flag.StringVar(&DirToServe, "dir", ".", "Directory to serve")
     flag.IntVar(&p, "port", 6900, "Port to listen on.")
-    flag.Float64Var(&ms, "speed", 20, "Maximum speed the server can serve")
+    flag.Float64Var(&ms, "speed", 20, "Maximum speed the server can serve (in MB/s)")
     flag.BoolVar(&debug, "debug", false, "Enable debug logs")
     flag.Parse()
     if DirToServe == "." {

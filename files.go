@@ -17,6 +17,8 @@ type FileForVisit struct {
     IsDir bool
     MimeType string
     Files []FileForVisit
+    // Add stuff for templates on the fly when needed
+    Extra any
 }
 
 func GetFileForVisit(webPath string) (FileForVisit, error) {
