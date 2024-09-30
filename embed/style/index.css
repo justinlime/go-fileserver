@@ -120,7 +120,6 @@
     background-color: var(--bg0);
 }
 body {
-    margin: 0;
     text-align: center;
 }
 /* search bar  */
@@ -160,7 +159,7 @@ li {
 }
 
 li:hover {
-    background-color: #11111B;
+    background-color: var(--sur2);
     color: #f38ba8;
 }
 .item-name {
@@ -233,7 +232,7 @@ a {
 .text-preview-container > pre > code {
     margin: 1rem;
 }
-.text-preview-container > pre > * {
+.text-preview-container > pre > span {
     font-family: firacode !important;
     background-color: var(--bg0) !important;
     font-size: 0.75rem;
