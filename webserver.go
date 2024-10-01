@@ -101,7 +101,10 @@ func openHandle(w http.ResponseWriter, r *http.Request) {
         case strings.Contains(mtype, "text"):
             // limit display size to half a MB
             if context.Size > 524_288 {
-                preview = "generic" 
+                preview = "text" 
+                context.Extra = map[string]interface{}{
+                    "HighlightedSuccess": false,
+                }
                 break
             }
             preview = "text" 
@@ -113,6 +116,7 @@ func openHandle(w http.ResponseWriter, r *http.Request) {
             }
             context.Extra = map[string]interface{}{
                 "HighlightedText": tmpl.HTML(hl),    
+                "HighlightedSuccess": true,
             }
         default:
             preview = "generic"

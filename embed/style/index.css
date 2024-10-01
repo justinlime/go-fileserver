@@ -132,7 +132,7 @@ body {
     border-radius: 1rem;
     padding: 0.5rem;
     font-size: 1rem;
-    margin-bottom: 0.75rem;
+    margin: 0.75rem 0;
 }
 #page-content-container {
     background: var(--bg2);
@@ -153,20 +153,14 @@ li {
     justify-content: space-between;
     transition: .2s;
     cursor: pointer;
-    border-radius: 1rem;
+    border-radius: 10px;
     background-color: var(--bg0);
-    margin: 1rem 1.5rem;
+    margin: 1rem 3rem;
 }
 
 li:hover {
     background-color: var(--sur2);
     color: #f38ba8;
-}
-.item-name {
-    color: #89b4fa;
-    text-align: left;
-    word-wrap: break-word;
-    word-break: break-word;
 }
 a {
     text-decoration: none;
@@ -178,6 +172,8 @@ a {
     background-color: var(--bg0);
     /* border-radius: 1.5rem; */
     padding: 1rem 1rem;
+    margin: 0 1rem;
+    border-radius: 1rem;
     /* margin: 1.5rem 5rem 3rem 5rem; */
     word-wrap: break-word;
 }
@@ -195,14 +191,26 @@ a {
 }
 .download-button:hover {
     color: #f38ba8;
+    background-color: var(--sur2);
 }
 
 #item-name-title {
     font-size: 1.75rem;
     color: #89b4fa;
     word-wrap: break-word;
-    margin: 0;
+    margin: 3rem 3rem 0 3rem;
     padding: 0;
+}
+.item-name {
+    color: #89b4fa;
+    text-align: left;
+    word-wrap: break-word;
+    word-break: break-word;
+    margin: 0 0.5rem;
+}
+.item-size {
+    white-space: nowrap;    
+    margin: 0 0.5rem;
 }
 .image-preview-containter {
     display: block;

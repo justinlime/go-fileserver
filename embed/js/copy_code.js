@@ -20,19 +20,19 @@ function addCopy() {
     }, 2000)
   })
 
-  container.addEventListener('mouseover', () => {
-    // butt.style.display = 'inline-block';
-    button.style.opacity = "1";
-  }); 
-  container.addEventListener('mouseout', () => {
-    // butt.style.display = 'none';
-    button.style.opacity = "0";
-  });
-  // for mobile 
-  window.addEventListener('scroll', () => {
-    // butt.style.display = 'none'; 
-    button.style.opacity = "0";
-  });
+//   container.addEventListener('mouseover', () => {
+//     // butt.style.display = 'inline-block';
+//     button.style.opacity = "1";
+//   }); 
+//   container.addEventListener('mouseout', () => {
+//     // butt.style.display = 'none';
+//     button.style.opacity = "0";
+//   });
+//   // for mobile 
+//   window.addEventListener('scroll', () => {
+//     // butt.style.display = 'none'; 
+//     button.style.opacity = "0";
+//   });
 }
 
 addCopy()
