@@ -90,7 +90,7 @@ func openHandle(w http.ResponseWriter, r *http.Request) {
             embedFS,
             "embed/templates/base.html",
             "embed/templates/page.html",
-            "embed/templates/catalog.html",
+            "embed/templates/content_catalog.html",
         ))
     } else {
         var preview string
@@ -121,8 +121,8 @@ func openHandle(w http.ResponseWriter, r *http.Request) {
             embedFS,
             "embed/templates/base.html",
             "embed/templates/page.html",
-            "embed/templates/open.html",
-            fmt.Sprintf("embed/templates/preview-%s.html", preview),
+            "embed/templates/content_preview.html",
+            fmt.Sprintf("embed/templates/preview_%s.html", preview),
         ))
     }
     if err := t.Execute(w, context); err != nil {
