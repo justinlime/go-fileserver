@@ -185,7 +185,6 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func downloadAllHandle(w http.ResponseWriter, r *http.Request) {
-    // TODO add limiting to this somehow
     // TODO add proper content-length, zip is adding some overhead
     // so I may need to do a dry-run first
     webPath := strings.TrimPrefix(r.URL.Path, "/downloadall")
@@ -202,9 +201,8 @@ func downloadAllHandle(w http.ResponseWriter, r *http.Request) {
     }
     w.Header().Set("Content-Type", "application/octet-stream")
     // zip is introducing some overhead here
-    // w.Header().Set("Content-Length", fmt.Sprintf("%d", ffv.Size))
+    w.Header().Set("Content-Length", fmt.Sprintf("%d", ActualZipSize(ffv)))
     w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", name))
-
 
     zipWriter := zip.NewWriter(w)
     defer zipWriter.Close()
