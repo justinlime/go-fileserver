@@ -35,9 +35,9 @@
 </ul>
 <a class="download-button"
      {{ if eq .WebPath "/" }}
-       href=""
+       href="/downloadall"
      {{ else }}
-       href=""
+       href="/downloadall{{ .WebPath }}"
      {{ end }}>
   <span>Download All</span>
   <br>

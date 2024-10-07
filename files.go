@@ -43,7 +43,6 @@ func GetFileForVisit(webPath string) (FileForVisit, error) {
         MimeType: InferMimeType(realPath),
     }
     if ffv.IsDir {
-        var size int64
         files, err := os.ReadDir(realPath)
         if err != nil {
             return FileForVisit{}, fmt.Errorf("Failed to read the dir for visit: %v", err)
@@ -55,9 +54,9 @@ func GetFileForVisit(webPath string) (FileForVisit, error) {
                 return FileForVisit{}, fmt.Errorf("Failed to get nested file for visit %s", err)
             }
             ffv.Files = append(ffv.Files, nestedFFV)
-            size += nestedFFV.Size
+            // ffv.Size += fileInfo.Size()
+            ffv.Size += nestedFFV.Size
         }
-        ffv.Size = size
     } else {
         ffv.Size = fileInfo.Size()
     }

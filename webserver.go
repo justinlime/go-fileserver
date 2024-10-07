@@ -1,14 +1,15 @@
 package main
 
 import (
-	"os"
-	"io"
+	"archive/zip"
 	"fmt"
-	"time"
-	"strings"
-	"net/http"
-	fp "path/filepath"
 	tmpl "html/template"
+	"io"
+	"net/http"
+	"os"
+	fp "path/filepath"
+	"strings"
+	"time"
 
 	"github.com/rs/zerolog/log"
 )
@@ -35,6 +36,10 @@ func middle(next func(http.ResponseWriter, *http.Request)) http.Handler {
 func rootHandle(w http.ResponseWriter, r *http.Request) {
     if len(r.URL.Path) >= 6 && r.URL.Path[0:6] == "/embed" {
         embedHandle(w, r)
+        return
+    }
+    if len(r.URL.Path) >= 12 && r.URL.Path[0:12] == "/downloadall" {
+        downloadAllHandle(w, r)
         return
     }
     if len(r.URL.Path) >= 9 && r.URL.Path[0:9] == "/download" {
@@ -150,7 +155,7 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
     }
     defer file.Close()
 
-    currentDownloads += 1
+    currentDownloads++
 
     log.Info().
         Str("requester_ip", GetIP(r)).
@@ -165,7 +170,7 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
     begin := time.Now()
     reader := &DownloadReader{Reader: file}
     io.Copy(w, reader)
-    currentDownloads -= 1
+    currentDownloads--
     l := log.Info().
              Str("requester_ip", GetIP(r)).
              Str("time_elapsed", PrettyTime(time.Since(begin).Seconds())).
@@ -177,4 +182,85 @@ func downloadHandle(w http.ResponseWriter, r *http.Request) {
     } else {
         l.Msg("Completed Download")
     } 
+}
+
+func downloadAllHandle(w http.ResponseWriter, r *http.Request) {
+    // TODO add limiting to this somehow
+    // TODO add proper content-length, zip is adding some overhead
+    // so I may need to do a dry-run first
+    webPath := strings.TrimPrefix(r.URL.Path, "/downloadall")
+    ffv, err := GetFileForVisit(webPath)
+    if err != nil {
+        log.Error().Err(err).Str("path", r.URL.Path).Msg("Failed to serve download")
+        http.NotFound(w,r)
+        return
+    }
+
+    name := "all.zip"
+    if webPath != "/" {
+        name = ffv.Name + ".zip"
+    }
+    w.Header().Set("Content-Type", "application/octet-stream")
+    // zip is introducing some overhead here
+    // w.Header().Set("Content-Length", fmt.Sprintf("%d", ffv.Size))
+    w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", name))
+
+
+    zipWriter := zip.NewWriter(w)
+    defer zipWriter.Close()
+
+    var canceled bool
+    walker := func(path string, info os.FileInfo, err error) error {
+        if err != nil {
+            return err
+        }
+        if info.IsDir() {
+            return nil
+        }
+        file, err := os.Open(path)
+        if err != nil {
+            return err
+        }
+        defer file.Close()
+
+        head, err := zip.FileInfoHeader(info)
+        if err != nil {
+            return err
+        }
+        head.Name = strings.TrimPrefix(strings.ReplaceAll(path, ffv.RealPath, ""), "/")
+        head.Method = zip.Store
+        zipW, err := zipWriter.CreateHeader(head)
+        if err != nil {
+            return err
+        }
+        reader := &DownloadReader{Reader: file}
+        if _, err := io.Copy(zipW, reader); err != nil {
+            canceled = true
+        }
+        return nil
+    }
+    currentDownloads++
+    log.Info().
+        Str("requester_ip", GetIP(r)).
+        Str("file", ffv.RealPath).
+        Int64("current_downloads", currentDownloads).
+        Str("available_bandwidth", fmt.Sprintf("%s/s", PrettyBytes(speedLimit/currentDownloads))).
+        Msg("New Download")
+    begin := time.Now()
+    if err := fp.Walk(ffv.RealPath, walker); err != nil {
+        log.Error().Err(err).
+            Str("dir", ffv.RealPath).
+            Msg("Failed to serve directory")
+    }
+    l := log.Info().
+             Str("requester_ip", GetIP(r)).
+             Str("time_elapsed", PrettyTime(time.Since(begin).Seconds())).
+             Str("download", ffv.RealPath).
+             Int64("current_downloads", currentDownloads)
+    if canceled {
+        l.Msg("Interrupted Download")
+    } else {
+        l.Msg("Completed Download")
+    } 
+    currentDownloads--
 }
