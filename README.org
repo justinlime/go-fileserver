@@ -1,18 +1,17 @@
 * Fileserver
 an opinionated file server downloader
-** Planned Features [2/14]
+** Planned Features [3/14]
 In order of importance
 
 - [X]  Limit previews size for text
 - [ ]  Limit preview size for image
 - [ ]  Add links within the path preview
-- [ ]  Compress folders for download
+- [X]  Zip folders for download
 - [ ]  Optional Ignore dotfiles
 - [ ]  Optional Ignore whitelist
 - [ ]  Optional Ignore blacklist
-- [ ]  Make an optional download cache
-- [X]  Optionally limit download speed
-- [ ]  Optionally limit concurrent downloads
+- [X]  Optional limit download speed
+- [ ]  Limit download speed per user (so one user can't hog the entire DL speed)
 - [ ]  Admin console
 - [ ]  Authed downloads
 - [ ]  Authed uploads

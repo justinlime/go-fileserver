@@ -14,6 +14,8 @@ var overrideToText []string = []string{
     "applicatoin/x-sh",
     // .js
     "application/javascript",
+    // .org
+    "application/vnd.lotus-organizer",
 }
 
 // Infer based on file extension. Failing that, infer based on contents of file.
