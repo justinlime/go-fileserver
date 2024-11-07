@@ -7,6 +7,6 @@
     buildPhase = ''
       go build -o go-fileserver 
       mkdir -p $out/bin
-      install -m755 go-fileserver $out/bin/go-filserver
+      install -m755 go-fileserver $out/bin/go-fileserver
     '';
 }
